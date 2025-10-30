@@ -16,12 +16,15 @@ for category, url in feeds.items():
     r = requests.get(url)
     if r.status_code == 200:
         lines = r.text.splitlines()
+        inside_event = False
         for line in lines:
             if line.startswith("BEGIN:VEVENT"):
                 merged.append(line)
+                merged.append(f"CATEGORIES:{category}")  # Kategorie direkt nach BEGIN:VEVENT
+                inside_event = True
             elif line.startswith("END:VEVENT"):
-                merged.append("CATEGORIES:" + category)
                 merged.append(line)
+                inside_event = False
             elif not line.startswith("BEGIN:VCALENDAR") and not line.startswith("END:VCALENDAR"):
                 merged.append(line)
     else:
